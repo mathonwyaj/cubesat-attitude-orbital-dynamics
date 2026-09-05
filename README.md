@@ -3,9 +3,10 @@
 ## Overview
 This project models a simplified CubeSat attitude-control system and a two-body Low Earth Orbit using MATLAB and Simulink.
 
-The project has two main parts:
+The project has three main parts:
 1. Single-axis spacecraft attitude control using a PD controller in Simulink.
 2. Numerical propagation of a 500 km circular Low Earth Orbit using MATLAB.
+3. C implementation and testing of the attitude-control algorithm, built with CMake and executed in Ubuntu/WSL.
 
 ## Attitude Control
 The spacecraft begins 30 degrees away from its commanded attitude.
@@ -28,6 +29,19 @@ Baseline results:
 - Maximum angular velocity: 12.6173 deg/s
 - Maximum control torque: 0.002000 N m
 - Settling time within +/- 0.5 deg: 4.016 s
+## C Controller Implementation
+
+The PD attitude-control algorithm was also implemented in C to demonstrate software implementation of the control law outside Simulink.
+
+The C implementation includes:
+- A reusable `compute_control_torque()` function
+- Proportional and derivative control terms
+- ±0.002 N·m actuator saturation
+- Four test cases covering different attitude and angular-rate conditions
+- Compilation and execution using GCC in Ubuntu/WSL
+- A CMake build configuration
+
+The C implementation reproduced the expected controller behaviour, including actuator saturation for a 30° initial pointing error.
 
 ## Controller Tuning
 Three proportional-gain values were tested while keeping Kd fixed.
@@ -58,12 +72,74 @@ Numerical validation:
 ## Tools
 - MATLAB
 - Simulink
+- C
+- GCC
+- CMake
+- Ubuntu/WSL
 - ode45 numerical integration
 
 ## Project Structure
+
 ```text
 CubeSat_Project/
 ├── attitude_control/
 ├── orbital_dynamics/
+├── c_implementation/
+│   ├── attitude_controller.c
+│   ├── attitude_controller.h
+│   ├── test_controller.c
+│   └── CMakeLists.txt
 ├── results/
 └── README.md
+```
+
+## How to Run
+
+### Attitude Control
+1. Run `attitude_control/init_attitude.m`.
+2. Open and run `attitude_control/cubesat_attitude.slx`.
+3. Run `attitude_control/analyze_results.m` to calculate performance metrics and generate plots.
+
+### Orbital Dynamics
+Run `orbital_dynamics/orbit_simulation.m`.
+
+This calculates the analytical circular-orbit parameters, propagates one orbit using `ode45`, validates the altitude, and generates the orbit plot.
+
+### C Implementation
+
+From the `c_implementation` folder:
+
+```bash
+mkdir build
+cd build
+cmake ..
+cmake --build .
+./test_controller
+```
+
+The C implementation uses a reusable PD control function with actuator saturation and four test cases covering different attitude and angular-rate conditions.
+
+## Results
+
+### Attitude Response
+![Attitude response](results/attitude_response.png)
+
+### Angular Velocity
+![Angular velocity response](results/angular_velocity_response.png)
+
+### Actuator Torque
+![Actuator torque response](results/actuator_torque_response.png)
+
+### 500 km Circular Orbit
+![500 km LEO](results/orbit_500km.png)
+### C Implementation
+
+From the `c_implementation` folder:
+
+```bash
+mkdir build
+cd build
+cmake ..
+cmake --build .
+./test_controller
+```
