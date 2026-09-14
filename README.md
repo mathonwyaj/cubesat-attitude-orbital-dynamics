@@ -132,14 +132,4 @@ The C implementation uses a reusable PD control function with actuator saturatio
 
 ### 500 km Circular Orbit
 ![500 km LEO](results/orbit_500km.png)
-### C Implementation
 
-From the `c_implementation` folder:
-
-```bash
-mkdir build
-cd build
-cmake ..
-cmake --build .
-./test_controller
-```
